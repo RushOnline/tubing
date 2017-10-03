@@ -1,0 +1,493 @@
+        <HEAD>
+        <META NAME="author" CONTENT="Jonathan Westhues">
+        <TITLE>Tube Joint Pattern Generator</TITLE>
+	
+    <script src="https://unpkg.com/jspdf"></script>
+    <script src="https://unpkg.com/file-saver"></script>
+    <script src="https://unpkg.com/three"></script>
+    <script src="js/tubejoin.js"></script>
+    <style>
+#bigouter {
+    margin-left: 47px;
+}
+#tubes {
+    padding: 0 10px 10px 0;
+}
+#controls {
+    float: left;
+    width: 250px;
+}
+#threejs {
+    width: 400px; height: 400px;
+}
+#result {
+    float: left;
+    width: 400px;
+    margin-left: 20px;
+}
+#glcanvas {
+    width: 400px;
+    height: 400px;
+}
+.label {
+    text-align: right;
+    white-space: nowrap;
+}
+.unit { font-size: 11px; }
+#tabh {
+    border-bottom: 2px solid #666;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    height: 27px;
+}
+.tabunsel, .tabsel {
+    padding: 2px 6px;
+    margin: 5px;
+    border: 1px solid #333;
+    border-bottom: none;
+    text-decoration: none;
+    border-radius: 4px 4px 0 0;
+    color: blue;
+    position: relative;
+    z-index: 100;
+    height: 18px;
+    display: inline-block;
+}
+.tabunsel:visited, .tabperma:visited { color: blue; }
+.tabunsel:hover, .tabperma:hover { color: #b04; }
+.tabsel {
+    background: white;
+    color: black;
+    box-shadow: 0 5px 0 white;
+}
+.tabperma {
+    text-decoration: none;
+    margin: 5px;
+    padding: 2px 0 2px 10px;
+}
+input[type="text"] { width: 55px; }
+    </style>
+
+        <STYLE type=text/css>
+body {
+    font-family: Verdana, sans-serif;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 15px;
+    background: white;
+    font-size: 16px;
+}
+ul {
+    margin-top: -15;
+    font-size: 16px;
+}
+h3 {
+    font-family: Verdana;
+    font-weight: normal;
+    font-size: 18px;
+    margin-left: 28;
+    margin-bottom: 10;
+    color: rgb(50, 50, 50);
+    letter-spacing: 1;
+}
+h4 {
+    font-family: Verdana;
+    font-weight: normal;
+    font-size: 18px;
+    color: rgb(50, 50, 50);
+    letter-spacing: 1;
+}
+h2 {
+    font-family: Verdana;
+    font-weight: 100;
+    font-size: 32px;
+    padding: 0 0 20px 0;
+    margin: 0 0 0 22px;
+    color: rgb(100, 100, 100);
+    letter-spacing: 1;
+}
+blockquote {
+    margin-left: 0;
+}
+li {
+    margin-left: 8%;
+}
+table.cryolite {
+    margin-left: 25;
+    margin-top: 5;
+    margin-right: 5;
+    margin-bottom: 10;
+    padding: 0;
+}
+table.link {
+    margin-bottom: 12;
+    margin-top: 0;
+}
+td.button {
+    font-size: 15px;
+}
+td {
+    font-size: 15px;
+}
+td.sublink {
+    font-size: 14px;
+}
+td.sublinkb {
+    font-size: 14px;
+    padding-bottom: 8px;
+}
+em {
+    font-weight: Bold;
+    font-style: normal;
+}
+a:hover {
+    color: rgb(185, 20, 0);
+}
+
+a {
+    text-decoration: none;
+    color: blue;
+}
+
+p.spaced {
+    line-height: 140%;
+}
+
+p {
+    font-size: 16px;
+    line-height: 120%;
+    margin-left: 45;
+    margin-bottom: 20;
+    margin-top: 0;
+    margin-right: 40;
+    padding-top: 0;
+}
+
+p.cryolite {
+    font-size: 13px;
+    margin: 62;
+    margin-top: -10;
+    margin-bottom: 0;
+    margin-right: 20;
+}
+
+em {
+    font-style: plain;
+}
+
+dl {
+    margin-left: 30;
+}
+
+dd {
+    margin-left: 0;
+    margin-bottom: 15;
+}
+
+dt {
+    line-height: 200%;
+    font-weight: bold;
+    margin-left: 2%;
+}
+
+img {
+    margin-left: 10;
+    margin-bottom: 10;
+}
+
+img.shim {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+div.bordered {
+    border-width: 1;
+    border-style: solid;
+    border-color: rgb(100, 100, 100);
+}
+div.pad {
+    margin-left: 8;
+    margin-right: 2;
+    margin-top: 2;
+    margin-bottom: 2;
+}
+
+li {
+    line-height: 140%;
+}
+        </STYLE>
+        </HEAD>
+<BODY onload="tubeJoinInit();">
+<FONT SIZE=-1><BR></FONT>
+<TABLE BORDER=0 ALIGN=LEFT>
+<TD WIDTH=1></TD><TD>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0>
+    <TR>
+        <TD WIDTH=163></TD>
+        <TD WIDTH=15 BGCOLOR=black HEIGHT=1></TD>
+    </TR>
+</TABLE>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0>
+    <TR><TD></TD>
+    <TD VALIGN=TOP WIDTH=140 ROWSPAN=2>
+        <IMG SRC=pics/shim.png WIDTH=140 HEIGHT=30>
+            <TABLE CELLPADDING=0 CELLSPACING=15 BORDER=0 ALIGN=LEFT WIDTH=135>
+                <TR><TD ALIGN=RIGHT><A HREF=index.pl>Home</A></TD></TR>
+                <TR><TD ALIGN=RIGHT><A HREF=prox.pl>Prox / RFID</A></TD></TR>
+
+                <TR><TD ALIGN=RIGHT><A HREF=verichip.pl>Verichips</A></TD></TR>
+
+                <TR><TD ALIGN=RIGHT><A HREF=ladder.pl>Ladder Logic</A></TD></TR>
+
+<!--                <TR><TD ALIGN=RIGHT><A HREF="https://protoplm.com/">ProtoPLM</A></TD></TR> -->
+                <TR><TD ALIGN=RIGHT>Tube Joints</TD></TR>
+                <TR><TD ALIGN=RIGHT><A HREF="http://solvespace.com/index.pl">SolveSpace (3d CAD)</A></TD></TR>
+                <TR><TD ALIGN=RIGHT><A HREF=sketchflat.pl>SketchFlat (2d CAD)</A></TD></TR>
+
+                <TR><TD ALIGN=RIGHT><A HREF=photo.pl>Photographs</A></TD></TR>
+                <TR><TD ALIGN=RIGHT><A HREF=misc.pl>Miscellany</A></TD></TR>
+
+                <TR><TD ALIGN=RIGHT><A HREF=resume.pl>Resume / Consulting</A></TD></TR>
+                <TR><TD ALIGN=RIGHT><A HREF=contact.pl>Contact Me</A></TD></TR>
+                <tr><td align=right></td>
+                <tr><td align=right></td>
+                <tr><td align=right>
+                </td></tr>
+            </TABLE>
+    </TD>
+    <TD BGCOLOR=black></TD>
+    <TD BGCOLOR=white></TD>
+    <TD HEIGHT=65 VALIGN=CENTER><BR><h2>Tube Joint Pattern Generator</h2></TD>
+    <TR><TD WIDTH=10><IMG SRC=pics/shim.png WIDTH=10 HEIGHT=1></TD>
+    <TD WIDTH=1 BGCOLOR=black><IMG SRC=pics/shim.png HEIGHT=1 WIDTH=1 CLASS=shim></TD>
+    <TD WIDTH=1 BGCOLOR=white><IMG SRC=pics/shim.png HEIGHT=1 WIDTH=1 CLASS=shim></TD>
+    <TD VALIGN=TOP ALIGN=LEFT WIDTH=735 HEIGHT=100%>
+    <p>
+        When two or more cylindrical pipes intersect, a saddle-shaped
+        curve is formed. To join the pipes (in a "saddle" or "fishmouth"
+        joint), we need to first trim them ("coping") along that curve. This
+        tool computes the curve, and unrolls it into a template. You can then
+        print that template, and wrap it around the pipes to mark them
+        for cutting.
+    </p>
+
+    <div id=bigouter>
+    <div id=tabh><a class=tabsel href="#">Loading JavaScript...</a></div>
+    <div id=controls>
+        <table id=controltab>
+            <tr>
+                <td class=label>Name:</td>
+                <td><input type=text id=tube_name disabled></td>
+            </tr><tr>
+                <td colspan=2 style="padding-top: 7px;">TUBE GEOMETRY</td>
+            </tr><tr>
+                <td class=label>Outside Diameter:</td>
+                <td><input type=text id=tube_od><span id=unit0 class=unit></span> </td>
+            </tr><tr>
+                <td class=label>Inside Diameter:</td>
+                <td><input type=text id=tube_id><span id=unit1 class=unit></span> </td>
+            </tr><tr>
+                <td class=label>Length:</td>
+                <td><input type=text id=tube_length><span id=unit2 class=unit></span>
+            </tr><tr>
+                <td colspan=2 style="padding-top: 7px;">ORIENTATION</td> </td>
+            </tr><tr>
+                <td class=label>Inclination Angle:</td>
+                <td><input type=text id=tube_theta>&deg;</td>
+            </tr><tr>
+                <td class=label>Azimuth Angle:</td>
+                <td><input type=text id=tube_phi>&deg;</td>
+            </tr><tr>
+                <td colspan=2 style="padding-top: 7px;">OFFSET POSITION ALONG</td>
+            </tr><tr>
+                <td class=label>Tube 1 Axis:</td>
+                <td><input type=text id=tube_offset_ax><span id=unit3 class=unit></span> </td>
+            </tr><tr>
+                <td class=label>This Tube Axis:</td>
+                <td><input type=text id=tube_offset_ax_me><span id=unit4 class=unit></span> </td>
+            </tr><tr>
+                <td class=label>Neither (Radial):</td>
+                <td><input type=text id=tube_offset_rad><span id=unit5 class=unit></span> </td>
+            </tr><tr>
+                <td colspan=2 style="padding-top: 7px;">MISCELLANEOUS</td>
+            </tr><tr>
+                <td class=label>Lines per Circle:</td>
+                <td><input type=text id=tube_pwls></td>
+            </tr><tr>
+                <td class=label>Template Seam:</td>
+                <td><input type=text id=tube_templ_seam>&deg;</td>
+            </tr><tr>
+                <td colspan=2 style="padding-top: 7px;">
+                joint is like a
+                    <label>
+                        <input type=radio id=tube_through name=through_deadend onclick="regen();">
+                        cross
+                    </label>
+                    <label>
+                        <input type=radio id=tube_deadend name=through_deadend onclick="regen();">
+                        tee
+                    </label>
+                </td>
+            </tr><tr>
+                <td colspan=2><label>
+                    <input type=checkbox id=tube_trim onclick="regen();">
+                    trim this tube against others
+                </label></td>
+            </tr><tr>
+                <td colspan=2><label>
+                    <input type=checkbox id=tube_trim_others onclick="regen();">
+                    trim other tubes against this
+                </label></td>
+            </tr><tr>
+                <td colspan=2><label>
+                    <input type=checkbox id=tube_shown onclick="regen();">
+                    show this tube</label>, or
+                    <a href="#" onclick="showAll(true); return false;">all</a> /
+                    <a href="#" onclick="showAll(false); return false;">none</a>
+                </td>
+            </tr>
+        </table>
+        <div style="height:10px;"></div>
+        <button onclick="regen();">Update</button> &ensp;
+        <button onclick="deleteShown();">Delete Tube</button>
+    </div>
+    <div id=result>
+        <div id=threejs oncontextmenu="return false;"></div>
+        left rotates, right pans, 
+        <a href="#" onclick="zoom(1); return false;">+</a> / 
+        <a href="#" onclick="zoom(-1); return false;">&minus;</a> zoom in / out,
+        <a href="#" onclick="zoom(0); return false;">F</a> to fit<br>
+        <label>
+            <input type=checkbox id=flat_shading onclick="regen();" checked>
+            flat shading (show facets)
+        </label>
+        &ensp;
+        <label>
+            <input type=checkbox id=curves onclick="regen();" checked>
+            show cut lines
+        </label>
+        <div style="height: 10px;"></div>
+        lengths in
+        <label>
+            <input type=radio name=inch_mm id=mm checked onclick="mmInch();">
+            mm
+        </label>
+        <label>
+            <input type=radio name=inch_mm id=inch onclick="mmInch();">
+            inches
+        </label> &ensp;
+        <label>
+            <input type=checkbox id=consider_id onclick="regen();">
+            walls are thick
+        </label>
+        <div style="height:15px;"></div>
+        <button onclick="templateShown(true);">Make Template (Outside)</button> &ensp;
+        <button id=template_id onclick="templateShown(false);">
+            Make Template (Inside)</button><br>
+        output as
+        <label><input type=radio name=dxf_pdf id=pdf checked> PDF</label>
+        <label><input type=radio name=dxf_pdf id=dxf> DXF</label> &ensp;
+        <label><input type=checkbox id=overlay_grid checked>
+            overlay grid</label>
+<!--        tile output if it's bigger than
+        <input type=text id=max_width value="8.5" size=3> by
+        <input type=text id=max_height value="11" size=3> inches<br>
+        <label>
+            <input type=checkbox id=print_grid>
+            overlay grid (to help line up tiles)
+        </label> -->
+    </div>
+    </div>
+
+    <div style="clear:both; height: 30px;"></div>
+
+    <p>Here are some examples of joints this can model:</p>
+    <p>
+        <a href="/tubejoin.pl">
+            <img src="pics/tube-exa.jpg" width=120 height=120>
+        </a> &emsp;&ensp;
+        <a href="/tubejoin.pl?json=%7B%22tubes%22:%7B%22shown%22:3,%22tubes%22:%5B%7B%22od%22:120,%22id%22:59,%22length%22:150,%22theta%22:0,%22phi%22:0,%22offset_rad%22:0,%22offset_ax%22:0,%22offset_ax_me%22:0,%22pwls%22:500,%22templ_seam%22:0,%22through%22:false,%22trim%22:true,%22trim_others%22:true,%22shown%22:true,%22color%22:255%7D,%7B%22od%22:120,%22id%22:39,%22length%22:150,%22theta%22:-90,%22phi%22:0,%22offset_rad%22:0,%22offset_ax%22:0,%22offset_ax_me%22:0,%22pwls%22:500,%22templ_seam%22:90,%22trim%22:true,%22trim_others%22:true,%22through%22:false,%22shown%22:true,%22color%22:65280%7D,%7B%22od%22:120,%22id%22:39,%22length%22:150,%22theta%22:120,%22phi%22:0,%22offset_rad%22:0,%22offset_ax%22:0,%22offset_ax_me%22:0,%22pwls%22:500,%22templ_seam%22:90,%22trim%22:true,%22trim_others%22:true,%22through%22:false,%22shown%22:true,%22color%22:16711935%7D,%7B%22od%22:80,%22id%22:39,%22length%22:150,%22theta%22:90,%22phi%22:60,%22offset_rad%22:20,%22offset_ax%22:0,%22offset_ax_me%22:0,%22pwls%22:500,%22templ_seam%22:90,%22trim%22:true,%22trim_others%22:true,%22through%22:false,%22shown%22:true,%22color%22:16776960%7D%5D%7D,%22view%22:%7B%22right%22:%7B%22x%22:-0.1290518011642581,%22y%22:0.3420266188832365,%22z%22:0.9307864548818716%7D,%22up%22:%7B%22x%22:0.3971154612106673,%22y%22:0.8779085244764309,%22z%22:-0.26753678834705086%7D,%22out%22:%7B%22x%22:-0.9086500663532139,%22y%22:0.33510358790516864,%22z%22:-0.24911973484528116%7D,%22offset%22:%7B%22x%22:-0.0830694804091117,%22y%22:-0.13573428360566178,%22z%22:0%7D,%22scale%22:0.006394670889540897,%22mouseX%22:0,%22mouseY%22:0%7D%7D">
+            <img src="pics/tube-exc.jpg" width=120 height=120>
+        </a> &emsp;&ensp;
+        <a href="/tubejoin.pl?json=%7B%22tubes%22:%7B%22shown%22:3,%22tubes%22:%5B%7B%22od%22:120,%22id%22:59,%22length%22:140,%22theta%22:0,%22phi%22:0,%22offset_rad%22:0,%22offset_ax%22:0,%22offset_ax_me%22:0,%22pwls%22:200,%22templ_seam%22:0,%22through%22:true,%22trim%22:true,%22trim_others%22:true,%22shown%22:true,%22color%22:255%7D,%7B%22od%22:40,%22id%22:19.9,%22length%22:180,%22theta%22:60,%22phi%22:0,%22offset_rad%22:0,%22offset_ax%22:-40,%22offset_ax_me%22:0,%22pwls%22:200,%22templ_seam%22:90,%22trim%22:true,%22trim_others%22:true,%22through%22:false,%22shown%22:true,%22color%22:65280%7D,%7B%22od%22:60,%22id%22:19.9,%22length%22:180,%22theta%22:120,%22phi%22:20,%22offset_rad%22:-2,%22offset_ax%22:-40,%22offset_ax_me%22:0,%22pwls%22:200,%22templ_seam%22:90,%22trim%22:true,%22trim_others%22:true,%22through%22:false,%22shown%22:true,%22color%22:16711935%7D,%7B%22od%22:60,%22id%22:19.9,%22length%22:180,%22theta%22:120,%22phi%22:-20,%22offset_rad%22:2,%22offset_ax%22:-40,%22offset_ax_me%22:0,%22pwls%22:200,%22templ_seam%22:90,%22trim%22:true,%22trim_others%22:true,%22through%22:false,%22shown%22:true,%22color%22:16776960%7D%5D%7D,%22view%22:%7B%22right%22:%7B%22x%22:0.0036155395293301423,%22y%22:0.6264579977972484,%22z%22:0.7794467941237393%7D,%22up%22:%7B%22x%22:0.8036234336574957,%22y%22:-0.4656962177022015,%22z%22:0.37056228854863293%7D,%22out%22:%7B%22x%22:0.5951271332668747,%22y%22:0.6250419264447199,%22z%22:-0.5051200703157864%7D,%22offset%22:%7B%22x%22:0.031866733899618756,%22y%22:-0.14283591330975567,%22z%22:0%7D,%22scale%22:0.006258149218288782,%22mouseX%22:0,%22mouseY%22:0%7D%7D">
+            <img src="pics/tube-exe.jpg" width=120 height=120>
+        </a> &emsp;&ensp;
+        <a href="/tubejoin.pl?json=%7B%22tubes%22:%7B%22shown%22:1,%22tubes%22:%5B%7B%22od%22:120,%22id%22:59,%22length%22:100,%22theta%22:0,%22phi%22:0,%22offset_rad%22:0,%22offset_ax%22:0,%22offset_ax_me%22:0,%22pwls%22:200,%22templ_seam%22:-20,%22through%22:true,%22trim%22:true,%22trim_others%22:true,%22shown%22:true,%22color%22:255%7D,%7B%22od%22:80,%22id%22:39,%22length%22:120,%22theta%22:60,%22phi%22:0,%22offset_rad%22:30,%22offset_ax%22:0,%22offset_ax_me%22:0,%22pwls%22:200,%22templ_seam%22:90,%22trim%22:true,%22trim_others%22:true,%22through%22:true,%22shown%22:true,%22color%22:65280%7D%5D%7D,%22view%22:%7B%22right%22:%7B%22x%22:-0.17764946431720938,%22y%22:0.16778130387207263,%22z%22:-0.9696855685730277%7D,%22up%22:%7B%22x%22:-0.9524475007207582,%22y%22:0.21856111408508044,%22z%22:0.21230826121625507%7D,%22out%22:%7B%22x%22:0.2475569150692215,%22y%22:0.9612910451475535,%22z%22:0.12097561870283863%7D,%22offset%22:%7B%22x%22:-0.003433760407574783,%22y%22:-0.05461366177976992,%22z%22:0%7D,%22scale%22:0.008329273943718728,%22mouseX%22:0,%22mouseY%22:0%7D%7D">
+            <img src="pics/tube-exf.jpg" width=120 height=120>
+        </a>
+    </p>
+
+    <p>Some notes:</p>
+    <ul>
+        <li>In the generated templates, the color of cut lines where a
+            tube intersects the outside of another tube is the same
+            as the color used to show that intersecting tube in the 3d
+            model. If wall thickness is enabled, then cut lines where a tube
+            intersects the inside are drawn in grey.</li>
+        <li>There will always be a seam in your template, where the paper wraps
+            back around on itself. If something important ends up on the seam,
+            then change the "Template Seam". For example, a change from zero to
+            180 degrees moves whatever used to be at the seam to the exact
+            center of the template.</li>
+        <li>By default, a 10&nbsp;mm grid is overlaid on your output. That makes it
+            easier to wrap it around the pipe without getting skewed, or to
+            reassemble a pattern tiled across multiple sheets of paper.</li>
+        <li>The permalink saves the tube geometry and your view of the 3d model
+            in the (rather long) URL. You can bookmark it, or send it to other
+            people.</li>
+        <li>The "Lines per Circle" setting determines how many line segments are
+            used to approximate the circular profiles. More is more precise and
+            slower. A few hundred is usually good.</li>
+        <li>The tubes can intersect at any angle. Their axes may be skew. Multiple
+            tubes are supported, with each tube intersected against all the others.</li>
+        <li>The angle and position (offset) of subsequent tubes is given with respect
+            to the first tube. For example, if the first tube's axis is the z axis,
+            and the second tube is placed perpendicular along the y axis, then for
+            that second tube:</li>
+        <ul style="margin-top: 0px;">
+            <li>"Tube 1 Axis" is the z axis</li>
+            <li>"This Tube Axis" is the y axis</li>
+            <li>"Neither (Radial)" is the x axis</li>
+        </ul>
+        <li>If the joint is like a cross, then the intersecting pipe is supposed to
+            intersect the first pipe in two places, going all the way through. If it's
+            like a tee, then the intersecting pipe is supposed to intersect once
+            and then stop.</li>
+        <ul style="margin-top: 0px;">
+            <li>At very oblique angles, you may need to adjust the "This Tube Axis"
+                offset to make tee joints work properly.</li>
+            <li>For joints where the pipes don't fully intersect (and
+                one hangs off the side of the other; this can happen
+                only if you make the pipes' axes skew by setting the
+                "Neither (Radial)" offset), choose "like a cross".</li>
+        </ul>
+        <li>If you can't figure out which tube you're editing, try hiding and then
+            re-showing it. Changes aren't effective until you click
+            "Update".</li>
+        <li>Intersection curves are computed numerically (and not in closed form),
+            to make it easier to support geometry beyond cylinders later.</li>
+        <li>This is all done on the client side.</li>
+    </ul>
+
+<p>
+<i>April 2015, Portland OR</i>
+</p>
+
+<BR>
+    <IMG SRC=pics/shim.png HEIGHT=10></TD>
+</TABLE>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0>
+    <TR>
+        <TD WIDTH=163><IMG SRC=pics/shim.png HEIGHT=1 WIDTH=163 CLASS=shim></TD>
+        <TD WIDTH=15 BGCOLOR=black HEIGHT=1><IMG SRC=pics/shim.png HEIGHT=1 CLASS=shim></TD>
+    </TR>
+    <TR>
+        <TD HEIGHT=10></TD>
+        <TD></TD>
+    </TR>
+</TABLE>
+<br>
+</BODY>
